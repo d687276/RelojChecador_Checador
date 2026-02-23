@@ -1,0 +1,90 @@
+<%- include('../partials/header') %>
+
+    <div class="flex h-screen overflow-hidden">
+
+        <aside class="w-64 glass-card border-r border-slate-700 hidden md:flex flex-col">
+            <div class="p-6 flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <i class="fas fa-user-clock text-white"></i>
+                </div>
+                <span class="text-xl font-bold tracking-wider text-white">PRESTODIN</span>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                <a href="/admin" class="sidebar-item sidebar-active flex items-center p-3 rounded-xl transition-all">
+                    <i class="fas fa-chart-pie mr-3"></i> Dashboard
+                </a>
+                <a href="/admin/empleados"
+                    class="sidebar-item flex items-center p-3 rounded-xl text-slate-400 hover:text-white transition-all">
+                    <i class="fas fa-users mr-3"></i> Empleados
+                </a>
+                <a href="/admin/dispositivos"
+                    class="sidebar-item flex items-center p-3 rounded-xl text-slate-400 hover:text-white transition-all">
+                    <i class="fas fa-laptop-code mr-3"></i> Dispositivos (HWID)
+                </a>
+                <a href="/admin/reportes"
+                    class="sidebar-item flex items-center p-3 rounded-xl text-slate-400 hover:text-white transition-all">
+                    <i class="fas fa-file-invoice mr-3"></i> Reportes
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-700">
+                <a href="/admin/logout"
+                    class="flex items-center p-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-all">
+                    <i class="fas fa-sign-out-alt mr-3"></i> Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col bg-slate-900 overflow-y-auto">
+
+            <header
+                class="h-16 glass-card border-b border-slate-700 flex items-center justify-between px-8 sticky top-0 z-10">
+                <div class="flex items-center space-x-4">
+                    <img src="<%= empresa.logo %>" alt="Logo Empresa" class="h-8 w-8 object-contain rounded">
+                    <h2 class="text-lg font-semibold text-slate-200">
+                        <%= empresa.nombre %>
+                    </h2>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-xs text-slate-400">Administrador</p>
+                        <p class="text-sm font-medium text-white">
+                            <%= user.nombre %>
+                        </p>
+                    </div>
+                    <div
+                        class="h-10 w-10 rounded-full bg-slate-700 flex items-center justify-center border border-indigo-500">
+                        <i class="fas fa-user-tie text-indigo-400"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-card p-6 rounded-3xl border border-slate-700">
+                        <p class="text-slate-400 text-sm">Asistencias Hoy</p>
+                        <h3 class="text-3xl font-bold text-white mt-1">42</h3>
+                        <div class="text-green-400 text-xs mt-2"><i class="fas fa-arrow-up"></i> +12% vs ayer</div>
+                    </div>
+                    <div class="glass-card p-6 rounded-3xl border border-slate-700">
+                        <p class="text-slate-400 text-sm">Dispositivos Activos</p>
+                        <h3 class="text-3xl font-bold text-white mt-1">8</h3>
+                        <div class="text-indigo-400 text-xs mt-2">Sincronizados ahora</div>
+                    </div>
+                    <div class="glass-card p-6 rounded-3xl border border-slate-700">
+                        <p class="text-slate-400 text-sm">Retardos</p>
+                        <h3 class="text-3xl font-bold text-white mt-1">3</h3>
+                        <div class="text-red-400 text-xs mt-2">Requieren atención</div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-3xl border border-slate-700 p-6 h-96 flex items-center justify-center">
+                    <p class="text-slate-500 italic">Área de visualización de registros en tiempo real...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <%- include('../partials/footer') %>

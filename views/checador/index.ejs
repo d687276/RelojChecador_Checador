@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <style>
+        #otp-input {
+            letter-spacing: 1rem;
+            text-shadow: 0 0 0 #4f46e5;
+            color: transparent;
+        }
+
+        #otp-input::placeholder {
+            letter-spacing: 0.5rem;
+            color: #cbd5e1;
+        }
+
+        #otp-input:focus {
+            color: #1e1b4b;
+            letter-spacing: 1rem;
+        }
+    </style>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reloj Checador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+</head>
+
+<body class="bg-slate-900 min-h-screen flex items-center justify-center font-sans">
+
+    <div id="check-panel" class="hidden">
+
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-md w-full m-4 border-4 border-indigo-100">
+
+            <div class="bg-indigo-600 p-8 text-white text-center">
+                <h1 class="text-3xl font-black tracking-tighter">ESTACIÓN DE REGISTRO</h1>
+                <p id="reloj" class="text-2xl font-mono mt-2 text-indigo-200">00:00:00</p>
+            </div>
+
+            <div class="p-8 space-y-6">
+                <div class="text-center">
+                    <p class="text-gray-500 text-sm">Ingresa usuario y código de validacion</p>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-indigo-600 uppercase mb-1 ml-1">Usuario</label>
+                    <input type="text" id="user-input" placeholder="usuario"
+                        class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-indigo-500 outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-indigo-600 uppercase mb-1 ml-1">Código de
+                        Validación</label>
+                    <input type="text" id="otp-input" maxlength="6" placeholder="000000"
+                        class="w-full text-center text-3xl font-bold tracking-[0.5rem] p-4 bg-indigo-50 border-2 border-indigo-100 rounded-2xl focus:border-indigo-500 outline-none text-indigo-900">
+                </div>
+
+                <button onclick="registrarAsistencia()" id="btn-registrar"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 rounded-2xl shadow-xl transform active:scale-95 transition-all flex items-center justify-center">
+                    <span id="btn-text">REGISTRAR</span>
+                    <i class="fas fa-fingerprint ml-3 text-xl"></i>
+                </button>
+
+                <div id="msg" class="text-center text-sm font-bold hidden p-3 rounded-xl"></div>
+            </div>
+
+            <div class="bg-gray-50 p-4 border-t text-center">
+                <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                    ID ESTACION: <span id="hw-id" class="text-indigo-400">CARGANDO...</span>
+                </span>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="registration-panel"
+        class="hidden mt-6 p-4 border-2 border-dashed border-indigo-500 rounded-lg bg-slate-800">
+        <h3 class="text-indigo-400 font-bold">💻 Equipo no reconocido</h3>
+
+        <div class="p-8 space-y-6">
+
+            <div>
+                <label class="block text-[10px] font-bold text-indigo-600 uppercase mb-1 ml-1">Identificador del
+                    equipo</label>
+                <input type="text" id="otp-hwgen" maxlength="11" placeholder="" readonly
+                    class="w-full text-center text-3xl font-bold tracking-[0.5rem] p-4 bg-indigo-50 border-2 border-indigo-100 rounded-2xl focus:border-indigo-500 outline-none text-indigo-900">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-indigo-600 uppercase mb-1 ml-1">Código de
+                    Vinculacion</label>
+                <input type="text" id="otp-input" maxlength="11" placeholder=""
+                    class="w-full text-center text-3xl font-bold tracking-[0.5rem] p-4 bg-indigo-50 border-2 border-indigo-100 rounded-2xl focus:border-indigo-500 outline-none text-indigo-900">
+            </div>
+
+            <button onclick="solicitarVinculacion()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-2 rounded">
+                Vincular
+            </button>
+        </div>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        // 3. Función para enviar los datos a la API
+        async function registrarAsistencia() {
+            //const email = document.getElementById('user-email').value;
+            const codigo = document.getElementById('otp-input').value;
+            const usuario = document.getElementById('user-input').value;
+            //const btn = document.getElementById('btn-registrar');            
+
+            if (codigo.length < 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Codigo invalido',
+                    text: 'Por favor, asegúrate de digitar el codigo correctamente.',
+                    confirmButtonColor: '#4f46e5'
+                });
+                return;
+            }
+
+            // Feedback visual de carga
+            Swal.fire({
+                title: 'Validando...',
+                html: 'Estamos verificando tu identidad y dispositivo',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading() }
+            });
+
+            try {
+                const response = await fetch('/api/registrar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': '<%= userData.API_KEY %>',
+                    },
+                    body: JSON.stringify({
+                        usuarioClave: usuario,
+                        codigoIngresado: codigo,
+                        uidDispositivo: hwID,
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Asistencia Registrada!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showClass: { popup: 'animate__animated animate__fadeInUp' }
+                    });
+                    document.getElementById('otp-input').value = "";
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Acceso Denegado',
+                        text: data.message,
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de servidor',
+                    text: 'No pudimos conectar con el reloj checador.',
+                });
+            }
+        }
+
+
+        // 1. Función para validar el equipo al entrar
+        async function actualizarHardware() {
+            const hwID = generateHardwareFingerprint(); // Generamos el ID real
+            console.log("Validando Equipo ID: " + hwID);
+
+            try {
+                const response = await fetch('/api/hw/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': '<%= userData.API_KEY %>',
+                    },
+                    body: JSON.stringify({ uidDispositivo: hwID }) // Enviamos el ID correcto
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('check-panel').classList.remove('hidden');
+                    document.getElementById('error-panel').classList.add('hidden');
+                } else {
+                    document.getElementById('check-panel').classList.add('hidden');
+                    document.getElementById('error-panel').classList.remove('hidden');
+                    console.warn("Dispositivo no autorizado en DB.");
+                }
+            } catch (error) {
+                console.error("Error de conexión:", error);
+            }
+        }
+
+
+        function generateHardwareFingerprint() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const txt = 'Prestodin_Security_Check_2024';
+
+            // Configuraciones que varían según el hardware/pantalla
+            ctx.textBaseline = "top";
+            ctx.font = "14px 'Arial'";
+            ctx.textBaseline = "alphabetic";
+            ctx.fillStyle = "#f60";
+            ctx.fillRect(125, 1, 62, 20);
+            ctx.fillStyle = "#069";
+            ctx.fillText(txt, 2, 15);
+            ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+            ctx.fillText(txt, 4, 17);
+
+            // Convertimos el dibujo en una cadena de texto única (Base64)
+            const b64 = canvas.toDataURL().replace("data:image/png;base64,", "");
+
+            // Un simple hash para acortar el resultado
+            let hash = 0;
+            for (let i = 0; i < b64.length; i++) {
+                const char = b64.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convertir a 32bit integer
+            }
+            return 'HW-' + Math.abs(hash);
+        }
+
+
+        let hwID = generateHardwareFingerprint()
+        document.getElementById('hw-id').innerText = hwID;
+
+
+        // 2. Reloj    
+        setInterval(() => {
+            document.getElementById('reloj').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+
+        // 2. Manejo de parámetros de URL al cargar
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const emailDesdeUrl = params.get('u');
+            const codigoDesdeUrl = params.get('c');
+
+            if (emailDesdeUrl) {
+                document.getElementById('user-input').value = emailDesdeUrl;
+            }
+            if (codigoDesdeUrl) {
+                document.getElementById('otp-input').value = codigoDesdeUrl; // <--- CORREGIDO: Ahora sí pone el código
+            }
+
+            // Ejecutamos la validación de hardware
+            actualizarHardware();
+        });
+
+
+    </script>
+
+</body>
+
+</html>
