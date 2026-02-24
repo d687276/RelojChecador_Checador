@@ -50,7 +50,7 @@ const loginLimiter = rateLimit({
 app.use("/", loginLimiter, require("./routes/index/index.routers"))
 app.use("/api", require("./routes/api/api.routes"))
 
-app.use("/auth", loginLimiter, require("./routes/auth/auth.routes"))
+app.use("/auth", require("./routes/auth/auth.routes"))
 
 // ... Aquí pegas tus rutas de /api/registrar y el código del Cron Job ...
 const PORT = process.env.PORT || 4000;

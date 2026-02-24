@@ -70,19 +70,23 @@ exports.HW_Validate = async (req, res) => {
         const query = 'select count(idx) as resultado from reloj_checador_dispositivos where trim(hwid) = trim($1)';
         const result = await pg.query(query, [uidDispositivo]);
 
-        if (result.rows[0].resultado > 0) {
+
+        console.log("Resultado: " + result.rows[0].resultado)
+
+        if (result.rows[0].resultado == "0") {
+            // Si no encuentra coincidencia exacta
+            res.status(401).json({
+                success: false,
+                message: ""
+            });
+        } else {
+
             // AQUÍ: Podrías insertar en otra tabla de "asistencias_log" el éxito
             // console.log(`✅ Acceso concedido a: ${email}`);            
             res.status(200).json({
                 success: true,
                 message: ""
             })
-        } else {
-            // Si no encuentra coincidencia exacta
-            res.status(401).json({
-                success: false,
-                message: ""
-            });
         }
 
     } catch (err) {
