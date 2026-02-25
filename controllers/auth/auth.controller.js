@@ -1,4 +1,6 @@
 const pg = require('../../database/db.middleware');
+const passwordHelper = require('../../helper/password.middleware')
+const tokenHelper = require('../../helper/token.middleware');
 
 
 exports.Login = (req, res) => {
@@ -18,21 +20,30 @@ exports.LoginPost = async (req, res) => {
     try {
         // Buscamos el código, el usuario y el UID en un solo paso
         // Filtramos por fecha actual para que códigos viejos no sirvan
-        const query = 'SELECT * FROM sistema.seguridad_usuarios WHERE usuario = $1';
+        const query = 'SELECT * FROM seguridad.usuarios WHERE usuario = $1';
         const result = await pg.query(query, [TextUsuario]);
 
         if (result.rows.length === 0) {
             return res.status(401).json({ success: false, message: "Nombre de usuario o contraseña invalido" });
         }
 
-        if (result.rows[0].password == TextPassword) {
+        const matchPassword = await passwordHelper.compararPassword(TextPassword, result.rows[0].password);
+
+        if (matchPassword) {
             // AQUÍ: Podrías insertar en otra tabla de "asistencias_log" el éxito
             // console.log(`✅ Acceso concedido a: ${email}`);
 
-            res.status(200).json({
-                success: true,
-                message: "Bienvenido al panel"
+            console.log("Usuario valido: " + TextUsuario);
+
+            const token = tokenHelper.generarToken(result.rows[0]); // Tu función que usa jwt
+
+            res.cookie('access_token', token, {
+                httpOnly: true,
+                secure: false, // true si usas https
+                maxAge: 3600000 // 1 hora
             });
+
+            res.redirect('/dashboard');
         } else {
             // Si no encuentra coincidencia exacta
             res.status(401).json({

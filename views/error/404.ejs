@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+
+    <div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
+        <div class="mb-8">
+            <div class="relative inline-block">
+                <span class="text-9xl font-extrabold text-slate-800 tracking-tighter">404</span>
+                <span
+                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-bold text-[#fbbf24] drop-shadow-md">
+                    !
+                </span>
+            </div>
+        </div>
+
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Página no encontrada
+        </h2>
+
+        <p class="text-slate-400 max-w-md mb-8">
+            Lo sentimos, la ruta <code
+                class="bg-slate-800 text-[#818cf8] px-2 py-1 rounded text-sm"><%= typeof url !== 'undefined' ? url : 'solicitada' %></code>
+            no existe o ha sido movida temporalmente.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="/dashboard"
+                class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#818cf8] hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">
+                <span>🏠 Ir al Dashboard</span>
+            </a>
+
+            <button onclick="history.back()"
+                class="inline-flex items-center justify-center px-6 py-3 border border-slate-700 text-base font-medium rounded-md text-slate-300 bg-slate-800 hover:bg-slate-700 transition-all">
+                <span>⬅️ Regresar</span>
+            </button>
+        </div>
+
+        <div
+            class="mt-12 pt-8 border-t border-slate-800 w-full max-w-xs text-slate-500 text-xs uppercase tracking-widest">
+            Sistema de Control Interno
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

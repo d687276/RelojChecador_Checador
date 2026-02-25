@@ -1,4 +1,5 @@
 exports.GetDashboard = async (req, res) => {
+
     // Imagina que estos datos vienen de tu DB después del login
     const datosEmpresa = {
         nombre: "Empresa de Prueba S.A.",
@@ -7,6 +8,6 @@ exports.GetDashboard = async (req, res) => {
 
     res.render('dashboard/dashboard', {
         empresa: datosEmpresa,
-        user: req.session.user // Datos del admin logueado
+        user: req.user // Datos del admin logueado
     });
 };

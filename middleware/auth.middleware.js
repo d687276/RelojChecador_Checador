@@ -1,17 +1,14 @@
+exports.validarSesion = (req, res, next) => {
+    const token = req.cookies.access_token; // <--- LEER DE COOKIES
 
-const validarApiKey = (req, res, next) => {
-    const apiKey = req.headers['x-api-key'];
-    const llaveMaestra = process.env.API_KEY;
+    if (!token) return res.redirect('/auth/login');
 
-    if (apiKey && apiKey === llaveMaestra) {
-        next(); // La llave coincide, permite pasar al controlador
-    } else {
-        console.warn(`⚠️ Intento de acceso no autorizado desde IP: ${req.ip}`);
-        res.status(403).json({
-            success: false,
-            message: "Acceso denegado: API Key inválida o ausente."
-        });
+    try {
+        const verificado = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = verificado;
+        next();
+    } catch (error) {
+        res.clearCookie('access_token');
+        res.redirect('/auth/login');
     }
 };
-
-module.exports = { validarApiKey };

@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-const { validarApiKey } = require("../../middleware/auth.middleware");
-
 let controllerIndex = require("../../controllers/index/index.controller")
 let controllerAuth = require("../../controllers/auth/auth.controller")
 
