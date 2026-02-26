@@ -10,7 +10,6 @@ variablesObligatorias.forEach(nombre => {
 
 const express = require('express');
 const path = require('path');
-const rateLimit = require('express-rate-limit');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
@@ -21,8 +20,12 @@ const app = express();
 
 // Middleware para entender datos JSON
 app.use(cookieParser());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }))
+
+
+
 
 
 app.set('view engine', 'ejs');
@@ -32,19 +35,6 @@ app.set('views', __dirname + '/views');
 // Le dice a Express que todos los archivos dentro de 'public' son accesibles
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-// Limitamos a 10 intentos cada 15 minutos por cada dirección IP
-const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 20,
-    // Esta función se ejecuta cuando se excede el límite
-    handler: (req, res) => {
-        res.status(429).render('error/limite_intentos', {
-            empresa: { nombre: "Prestodin" } // O los datos que ya manejes
-        });
-    }
-});
 
 
 // 2. Endpoint de Validación

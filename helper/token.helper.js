@@ -5,9 +5,11 @@ const jwt = require('jsonwebtoken');
 exports.generarToken = (usuario) => {
     // Guardamos info útil pero NO sensible (no guardes el password aquí)
     const payload = {
-        id: usuario.idx,
-        usuario: usuario.username,
-        perfil: usuario.perfil
+        idx: usuario.idx,
+        usuario: usuario.usuario,
+        sujeto: usuario.sujeto,
+        perfil: usuario.perfil,
+        status: usuario.status
     };
 
     // El token expira en 8 horas para que no se quede abierto siempre
@@ -24,6 +26,10 @@ exports.verificarToken = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.status !== true) {
+            res.clearCookie('access_token');
+            return res.redirect('/auth/login?error=cuenta_suspendida');
+        }
         req.user = decoded;
         next();
     } catch (error) {

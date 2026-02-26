@@ -88,7 +88,7 @@
                         background: '#1e293b',
                         color: '#fff'
                     }).then(() => {
-                        window.location.href = '/admin'; // Ruta a la que quieres ir
+                        window.location.href = '/dashboard'; // Ruta a la que quieres ir
                     });
                 } else {
                     // SI HAY ERROR (Aquí está lo que pediste)
@@ -105,13 +105,31 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error de conexión',
-                    text: 'No se pudo conectar con el servidor.',
+                    //text: 'No se pudo conectar con el servidor.',
+                    text: error.message,
                     background: '#1e293b',
                     color: '#fff'
                 });
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
+            }
+        });
+
+
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+
+            if (error === 'cuenta_suspendida') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Acceso Denegado',
+                    text: 'Tu cuenta se encuentra suspendida. Contacta al administrador.',
+                    background: '#1e293b', // Mantenemos tu estilo oscuro [cite: 16]
+                    color: '#fff',
+                    confirmButtonColor: '#4f46e5' // Tu color índigo [cite: 21]
+                });
             }
         });
     </script>

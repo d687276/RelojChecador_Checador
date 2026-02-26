@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const { verificarToken } = require("../../helper/token.middleware");
+const { verificarToken } = require("../../helper/token.helper");
 let controllerAPI = require("../../controllers/api/api.controller")
 
 router.post('/hw/status', verificarToken, controllerAPI.HW_Validate)

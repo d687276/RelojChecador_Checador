@@ -10,4 +10,5 @@ exports.GetDashboard = async (req, res) => {
         empresa: datosEmpresa,
         user: req.user // Datos del admin logueado
     });
+
 };

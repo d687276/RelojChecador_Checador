@@ -4,53 +4,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prestodin - Panel de Control</title>
+    <title>Prestodin - Sistema de Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        .sidebar-active {
-            border-left: 4px solid #818cf8;
-            background-color: #334155;
-            color: white;
+        /* Personalización de la barra de desplazamiento para el sidebar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
         }
     </style>
 </head>
 
 <body class="bg-[#0f172a] text-slate-200 flex h-screen overflow-hidden">
 
+
+
+    <script>
+        function confirmarLogout() {
+            Swal.fire({
+                title: '¿Cerrar Sesión?',
+                text: "Tendrás que ingresar tus credenciales nuevamente para entrar.",
+                icon: 'warning',
+                showCancelButton: true,
+                background: '#1e293b', // Color de fondo de tu sidebar
+                color: '#f8fafc',      // Texto claro
+                confirmButtonColor: '#818cf8', // Tu color púrpura
+                cancelButtonColor: '#334155',  // Color slate oscuro
+                confirmButtonText: 'Sí, salir',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si el usuario confirma, lo enviamos a la ruta de logout
+                    window.location.href = '/auth/logout';
+                }
+            })
+        }
+
+
+
+        // Configuración: 15 minutos de inactividad (15 * 60 * 1000 ms)
+        const TIEMPO_INACTIVIDAD = 2 * 60 * 1000;
+        let temporizador;
+
+        function reiniciarTemporizador() {
+            clearTimeout(temporizador);
+            temporizador = setTimeout(cerrarSesionInactiva, TIEMPO_INACTIVIDAD);
+        }
+
+        function cerrarSesionInactiva() {
+            // Usamos SweetAlert2 que ya instalamos para avisar antes de sacar al usuario
+            Swal.fire({
+                title: 'Sesión expirada',
+                text: "Se ha cerrado la sesión por inactividad para proteger tus datos.",
+                icon: 'info',
+                confirmButtonColor: '#818cf8',
+                confirmButtonText: 'Entendido'
+            }).then(() => {
+                window.location.href = '/auth/logout'; // Reutilizamos tu ruta de logout
+            });
+
+            // Si no hace clic en 5 segundos, redirigir de todos modos
+            setTimeout(() => { window.location.href = '/auth/logout'; }, 5000);
+        }
+
+        // Escuchar eventos de actividad del usuario
+        window.onload = reiniciarTemporizador;
+        window.onmousemove = reiniciarTemporizador;
+        window.onkeypress = reiniciarTemporizador;
+        window.onclick = reiniciarTemporizador;
+        window.onscroll = reiniciarTemporizador;
+
+    </script>
+
+
+
     <aside class="w-64 bg-[#1e293b] border-r border-slate-700 flex flex-col hidden md:flex">
-        <div class="p-6 border-bottom border-slate-700 text-center">
-            <h1 class="text-[#fbbf24] font-bold text-xl tracking-widest">PRESTODIN</h1>
-            <p class="text-xs text-slate-500 uppercase">Sistema de Control</p>
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-[#fbbf24] font-bold text-xl tracking-widest text-center">PRESTODIN</h1>
+            <p class="text-[10px] text-slate-500 text-center uppercase mt-1">Control de Asistencia</p>
         </div>
 
-        <nav class="mt-6 flex-1">
+        <nav class="flex-1 mt-4 px-4 space-y-2">
             <a href="/dashboard"
-                class="flex items-center px-6 py-3 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors sidebar-active">
-                <span class="mr-3">🏠</span> Inicio
+                class="flex items-center px-4 py-3 text-slate-300 hover:bg-[#818cf8] hover:text-white rounded-lg transition-all group">
+                <span class="mr-3 group-hover:scale-110 transition-transform">🏠</span> Inicio
             </a>
-            <a href="/asistencia"
-                class="flex items-center px-6 py-3 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors">
-                <span class="mr-3">📊</span> Asistencia
+            <a href="/dashboard/reportes"
+                class="flex items-center px-4 py-3 text-slate-300 hover:bg-[#818cf8] hover:text-white rounded-lg transition-all group">
+                <span class="mr-3 group-hover:scale-110 transition-transform">📊</span> Reportes
             </a>
-            <a href="/empleados"
-                class="flex items-center px-6 py-3 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors">
-                <span class="mr-3">👥</span> Empleados
+            <a href="/dashboard/empleados"
+                class="flex items-center px-4 py-3 text-slate-300 hover:bg-[#818cf8] hover:text-white rounded-lg transition-all group">
+                <span class="mr-3 group-hover:scale-110 transition-transform">👥</span> Empleados
             </a>
         </nav>
 
-        <div class="p-4 border-t border-slate-700">
-            <a href="/logout" class="text-red-400 text-sm flex items-center px-4 py-2 hover:bg-red-900/20 rounded">
-                <span class="mr-2">🚪</span> Cerrar Sesión
-            </a>
+        <div class="p-4 border-t border-slate-700 bg-[#1e293b]">
+            <div class="flex items-center p-2 mb-4">
+                <div
+                    class="w-8 h-8 rounded-full bg-[#818cf8] flex items-center justify-center text-xs font-bold text-white mr-3">
+                    <%= user.usuario.substring(0,2).toUpperCase() %>
+                </div>
+                <div class="overflow-hidden">
+                    <p class="text-xs font-medium text-white truncate">
+                        <%= user.usuario %>
+                    </p>
+                    <p class="text-[10px] text-slate-500">Administrador</p>
+                </div>
+            </div>
+            <button onclick="confirmarLogout()"
+                class="block w-full text-center py-2 px-4 text-xs font-medium text-red-400 hover:bg-red-900/20 border border-red-900/50 rounded-lg transition-colors">
+                Cerrar Sesión
+            </button>
         </div>
     </aside>
 
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-16 bg-[#1e293b] border-b border-slate-700 flex items-center justify-between px-8">
-            <button class="md:hidden text-slate-400">☰</button>
-            <div class="flex items-center space-x-4">
-                <span class="text-sm">Admin: <span class="text-[#818cf8]">Prestodin Sistemas</span></span>
+    <div class="flex-1 flex flex-col min-h-screen overflow-hidden">
+
+        <header class="h-16 bg-[#1e293b] border-b border-slate-700 flex items-center justify-between px-8 shadow-sm">
+            <div class="flex items-center">
+                <button class="md:hidden text-slate-400 mr-4">☰</button>
+                <h2 class="text-sm font-medium text-slate-400">Panel de Administración</h2>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[10px] text-slate-500 uppercase leading-none">Estado del Sistema</p>
+                    <p class="text-[10px] text-green-400 font-bold">En Línea</p>
+                </div>
+                <div class="h-8 w-[1px] bg-slate-700"></div>
+                <span class="text-xs font-medium">Jueves, 26 Feb</span>
             </div>
         </header>
 
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#0f172a] p-8">
+        <main class="flex-grow p-6 md:p-10 overflow-y-auto bg-[#0f172a]">
