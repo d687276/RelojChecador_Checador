@@ -27,6 +27,23 @@ exports.validarSesion = (req, res, next) => {
 };
 
 
+exports.validarApiKey = (req, res, next) => {
+    const apiKeyRecibida = req.headers['x-api-key']; // Buscamos la llave en los headers
+    const apiKeyMaestra = process.env.API_KEY; // La que tienes en tu .env
+
+    if (!apiKeyRecibida || apiKeyRecibida !== apiKeyMaestra) {
+        console.warn(`🚨 Intento de acceso no autorizado desde: ${req.ip}`);
+        return res.status(403).json({
+            success: false,
+            message: "Acceso prohibido: API Key inválida o ausente."
+        });
+    }
+
+    console.log(`✅ Acceso autorizado desde: ${req.ip}`);
+    next(); // Si todo está bien, pasa al controlador
+};
+
+
 
 
 

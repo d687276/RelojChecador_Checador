@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/img/logo.png">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/assets/img/logo.png">
+    <title>
+        <%= app.name %>
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body class="bg-[#f3f4f9] font-sans flex h-screen overflow-hidden">
+
+
+    <aside id="sidebar"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 transform -translate-x-full transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0">
+        <div class="h-20 flex items-center px-6 border-b border-gray-100">
+            <img src="/assets/img/logo.png" alt="Logo" class="w-16 h-16">
+            <span class="text-xl font-bold text-slate-800 tracking-tight">IQ</span>
+        </div>
+
+        <nav class="flex-1 mt-4 px-4 space-y-1 overflow-y-auto">
+            <p class="text-[10px] font-bold text-gray-400 uppercase px-3 mb-2 tracking-widest">Navegación</p>
+
+            <% menu.forEach(modulo=> { %>
+                <a href="<%= modulo.link %>"
+                    class="flex items-center p-3 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors group">
+                    <div class="w-8">
+                        <i class="fas <%= modulo.icono %> text-lg group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <span class="ml-1 font-medium text-sm">
+                        <%= modulo.nombre %>
+                    </span>
+                </a>
+                <% }); %>
+        </nav>
+
+        <div class="p-4 border-t border-gray-100">
+            <div class="flex items-center p-2">
+                <div
+                    class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
+                    <%= user.usuario.charAt(0) %>
+                </div>
+                <div class="ml-3 overflow-hidden">
+                    <p class="text-xs font-bold text-slate-800 truncate">
+                        Prestodin
+                    </p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-20 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
+            <nav class="bg-white border-b border-gray-100 p-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="mobile-menu-button" class="text-slate-600 p-2 mr-2 lg:hidden focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </nav>
+
+
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center p-2">
+                    <div
+                        class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
+                        <%= user.usuario.charAt(0) %>
+                    </div>
+                    <div class="ml-3 overflow-hidden">
+                        <p class="text-xs font-bold text-slate-800 truncate">
+                            <%= user.usuario %>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+
+        </header>
+
+        <section class="p-8 overflow-y-auto h-full">
+            <div class="max-w-7xl mx-auto">
+                <%- body %>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Actualizar el reloj del header como en tu checador
+        setInterval(() => {
+            document.getElementById('reloj-header').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+    </script>
+
+    <script>
+
+        // 1. Función para el botón de Logout del Sidebar
+        function confirmarLogout() {
+            Swal.fire({
+                title: '¿Cerrar Sesión?',
+                text: "Tendrás que ingresar tus credenciales nuevamente.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#4F46E5', // Indigo de StarAdmin
+                cancelButtonColor: '#64748b',  // Slate
+                confirmButtonText: 'Sí, salir',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/auth/logout';
+                }
+            })
+        }
+
+        // 2. Lógica de Inactividad (2 minutos para pruebas)
+        const TIEMPO_INACTIVIDAD = 2 * 60 * 1000;
+        let temporizador;
+
+        function reiniciarTemporizador() {
+            clearTimeout(temporizador);
+            temporizador = setTimeout(cerrarSesionInactiva, TIEMPO_INACTIVIDAD);
+        }
+
+        function cerrarSesionInactiva() {
+            Swal.fire({
+                title: 'Sesión expirada',
+                text: "Cerrada por inactividad para proteger tu cuenta.",
+                icon: 'info',
+                confirmButtonColor: '#4F46E5',
+                confirmButtonText: 'Regresar al Login'
+            }).then(() => {
+                window.location.href = '/auth/logout';
+            });
+
+            // Redirección forzada tras 10 segundos si no hay respuesta
+            setTimeout(() => { window.location.href = '/auth/logout'; }, 10000);
+        }
+
+        // Eventos para detectar que el "maldito" sigue trabajando
+        ['onload', 'onmousemove', 'onkeypress', 'onclick', 'onscroll'].forEach(evt => {
+            window[evt] = reiniciarTemporizador;
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+
+            menuBtn.addEventListener('click', () => {
+                // Alterna la clase para mostrar/ocultar el menú
+                sidebar.classList.toggle('-translate-x-full');
+            });
+
+            // Opcional: Cerrar menú al hacer clic fuera de él en móviles
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && !menuBtn.contains(e.target) && window.innerWidth < 1024) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            });
+        });
+
+    </script>
+
+
+</body>
+
+</html>

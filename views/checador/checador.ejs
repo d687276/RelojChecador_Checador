@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reloj Checador | Prestoflux</title>
+    <title>Reloj Checador</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -102,6 +102,7 @@
         //localStorage.removeItem('relojchecador_uuid');        
         let hwID = localStorage.getItem('relojchecador_uuid');
 
+        console.log("-------------------------------");
         // 3. Función para enviar los datos a la API
         async function registrarAsistencia() {
             //const email = document.getElementById('user-email').value;
@@ -174,6 +175,7 @@
 
         // 1. Función para validar el equipo al entrar
         async function actualizarHardware() {
+
             try {
                 // Aseguramos que hwID no sea nulo antes de la petición
                 if (!hwID) {
@@ -182,12 +184,13 @@
                     hwID = nuevoID;
                 }
 
+
                 const response = await fetch('/api/hw/status', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         // El ?. evita errores si userData no llega del servidor
-                        'x-api-key': '<%= userData?.API_KEY || "" %>',
+                        'x-api-key': '<%= userData.API_KEY %>',
                     },
                     body: JSON.stringify({ uidDispositivo: hwID })
                 });

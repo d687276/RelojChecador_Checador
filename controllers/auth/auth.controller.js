@@ -23,13 +23,7 @@ const loginSchema = Joi.object({
 
 exports.Login = (req, res) => {
     const userData = { API_KEY: process.env.API_KEY };
-    res.render('login/login', { userData });
-}
-
-
-exports.Logout = (req, res) => {
-    res.clearCookie('access_token');
-    res.render('login/login');
+    res.render('login/login', { userData, layout: false, app: req.app });
 }
 
 
@@ -39,7 +33,7 @@ exports.Logout = (req, res) => {
 
     // Redirigimos a una página de "Sesión Finalizada"
     res.render('login/logout', {
-        empresa: "Prestodin"
+        empresa: "Prestodin", layout: false, app: req.app
     });
 }
 
@@ -79,8 +73,6 @@ exports.LoginPost = async (req, res) => {
                 secure: false, // true si usas https
                 maxAge: 3600000 // 1 hora
             });
-
-            //res.redirect('/dashboard');
 
             res.status(200).json({
                 success: true,

@@ -16,6 +16,8 @@ let loginLimiter = rateLimit({
     }
 });
 
+
+router.get('', controllerAuth.Login)
 router.get('/login', controllerAuth.Login)
 router.post('/login', loginLimiter, controllerAuth.LoginPost)
 router.get('/logout', controllerAuth.Logout)

@@ -12,29 +12,36 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const expressLayouts = require('express-ejs-layouts');
 
 
 // ... (tus otros imports: nodemailer, cron)
 const app = express();
 
+// Le dice a Express que todos los archivos dentro de 'public' son accesibles
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware para entender datos JSON
 app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(bodyParser.json());
+app.use(expressLayouts);
 
 
 
 
-
+app.set('layout', 'layouts/master');
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
 
-// Le dice a Express que todos los archivos dentro de 'public' son accesibles
-app.use(express.static(path.join(__dirname, 'public')));
 
+
+app.use((req, res, next) => {
+    res.locals.app = { "name": "IQ" }
+    next()
+})
 
 
 // 2. Endpoint de Validación
@@ -42,8 +49,7 @@ app.use("/api", require("./routes/api/api.routes"))
 
 app.use("/auth", require("./routes/auth/auth.routes"))
 app.use("/dashboard", require("./routes/dashboard/dashboard.routes"))
-app.use("/", require("./routes/index/index.routers"))
-
+app.use("/checador", require("./routes/checador/checador.routes"))
 
 
 app.use((req, res) => {
@@ -51,7 +57,8 @@ app.use((req, res) => {
     if (req.accepts('html')) {
         return res.status(404).render('error/404', {
             url: req.url,
-            empresa: "Prestodin"
+            empresa: "Prestodin",
+            layout: false
         });
     }
 

@@ -1,42 +1,53 @@
-<%- include('../partials/header') %>
+<!DOCTYPE html>
+<html lang="es">
 
-    <div class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4">
-        <div class="mb-8">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - No Encontrado | Prestoflux</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+</head>
+
+<body class="bg-[#f3f4f9] min-h-screen flex items-center justify-center font-sans">
+
+    <div class="w-full max-w-lg p-6 text-center">
+        <div class="mb-10 animate__animated animate__pulse animate__infinite">
             <div class="relative inline-block">
-                <span class="text-9xl font-extrabold text-slate-800 tracking-tighter">404</span>
-                <span
-                    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-bold text-[#fbbf24] drop-shadow-md">
-                    !
-                </span>
+                <span class="text-[150px] font-black text-slate-200 tracking-tighter leading-none">404</span>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <i class="fas fa-search text-indigo-600 text-6xl drop-shadow-xl"></i>
+                </div>
             </div>
         </div>
 
-        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
-            Página no encontrada
-        </h2>
-
-        <p class="text-slate-400 max-w-md mb-8">
-            Lo sentimos, la ruta <code
-                class="bg-slate-800 text-[#818cf8] px-2 py-1 rounded text-sm"><%= typeof url !== 'undefined' ? url : 'solicitada' %></code>
+        <h2 class="text-3xl font-bold text-slate-800 mb-4">¡Ups! Página no encontrada</h2>
+        <p class="text-slate-500 mb-10 leading-relaxed">
+            Parece que la ruta <code
+                class="bg-indigo-50 text-indigo-600 px-2 py-1 rounded font-mono text-sm"><%= typeof url !== 'undefined' ? url : 'solicitada' %></code>
             no existe o ha sido movida temporalmente.
         </p>
 
-        <div class="flex flex-col sm:flex-row gap-4">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/dashboard"
-                class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#818cf8] hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-500/20">
-                <span>🏠 Ir al Dashboard</span>
+                class="inline-flex items-center justify-center px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 transition-all transform active:scale-95">
+                <i class="fas fa-home mr-2"></i> Ir al Dashboard
             </a>
 
             <button onclick="history.back()"
-                class="inline-flex items-center justify-center px-6 py-3 border border-slate-700 text-base font-medium rounded-md text-slate-300 bg-slate-800 hover:bg-slate-700 transition-all">
-                <span>⬅️ Regresar</span>
+                class="inline-flex items-center justify-center px-8 py-4 bg-white border border-gray-200 text-slate-600 font-bold rounded-2xl hover:bg-gray-50 transition-all shadow-sm">
+                <i class="fas fa-arrow-left mr-2"></i> Volver atrás
             </button>
         </div>
 
-        <div
-            class="mt-12 pt-8 border-t border-slate-800 w-full max-w-xs text-slate-500 text-xs uppercase tracking-widest">
-            Sistema de Control Interno
+        <div class="mt-16 pt-8 border-t border-gray-200">
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em]">
+                SISTEMA DE CONTROL INTERNO PRESTOFLUX
+            </p>
         </div>
     </div>
 
-    <%- include('../partials/footer') %>
+</body>
+
+</html>
